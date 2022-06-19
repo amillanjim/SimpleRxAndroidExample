@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="GeneralMargin">15dp</dimen>
+
+    // Card Dimensions
+    <dimen name="CardElevation">12dp</dimen>
+    <dimen name="ContentCardText">15sp</dimen>
+    <dimen name="TitleCard">25sp</dimen>
+    <dimen name="CornerRadius">15dp</dimen>
+</resources>

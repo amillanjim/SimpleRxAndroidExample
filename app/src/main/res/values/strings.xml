@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RxProject</string>
+
+    // General Strings
+    <string name="RX00">RX00 Introducción</string>
+    <string name="EjemploRX">Esté es un ejemplo de RXJava</string>
+</resources>

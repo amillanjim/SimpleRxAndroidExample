@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_primary">#ff5252</color>
+    <color name="color_primary_variant">#c50e29</color>
+    <color name="color_primary_varian_light">#ffebee</color>
+    <color name="color_primary_disable">#ffebee</color>
+    <color name="color_on_primary">#ffffff</color>
+
+    <color name="color_secondary">#ffab91</color>
+    <color name="color_secondary_variant">#c97b63</color>
+    <color name="color_secondary_disable">#fbe9e7</color>
+    <color name="color_on_secondary">#000000</color>
+
+    <color name="color_background">#ffffff</color>
+    <color name="color_on_background">#37474f</color>
+
+    <color name="color_surface">#FCFFFFFF</color>
+    <color name="color_on_surface">#37474f</color>
+
+    <color name="color_error">#FF3434</color>
+    <color name="color_on_error">@android:color/white</color>
+
+    <color name="color_success">#53D86A</color>
+    <color name="color_on_success">#FFFFFF</color>
+
+    <color name="color_warning">#FFCB2F</color>
+    <color name="color_on_warning">#FFFFFF</color>
+
+    <color name="color_black">#000000</color>
+    <color name="color_gray_500">#1F1F27</color>
+    <color name="color_gray_300">#79797D</color>
+    <color name="color_gray_200">#A5A5A9</color>
+    <color name="color_gray_100">#D2D2D4</color>
+    <color name="color_gray_1">#FFFEFF</color>
+    <color name="color_gray_20">#F7FFFFFF</color>
+    <color name="color_gray_30">#7A102027</color>
+    <color name="shimmer_placeholder">#dddddd</color>
+
+    <color name="color_transparent">#00FFFFFF</color>
+
+    <color name="toolBarcolor">#28403E3C</color>
+
+    <color name="color_yellow">#ffc107</color>
+    <color name="color_green">#61CD73</color>
+
+    <color name="ic_launcher_background">#FFFFFF</color>
+</resources>
