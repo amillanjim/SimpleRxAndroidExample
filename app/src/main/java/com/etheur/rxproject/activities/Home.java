@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.etheur.rxproject.R;
 import com.etheur.rxproject.adapters.HomeCardAdapter;
 import com.etheur.rxproject.models.CardItem;
+import com.etheur.rxproject.models.RectangleExample;
 import com.etheur.rxproject.utilities.Utilities;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Home extends AppCompatActivity {
 
     private void initView(){
         Utilities.toolbar(this, "RxJava Ejemplo");
+        RectangleExample rectangle = new RectangleExample.Builder(10, 10).x(5).y(5).build();
         items.add(new CardItem(getResources().getString(R.string.RX00), getResources().getString(R.string.EjemploRX), new Rx00()));
         items.add(new CardItem("RX01 Disposable", "Esté es un ejemplo de disposable", new Rx01()));
         items.add(new CardItem("RX02 CompositeDisposable", "Esté es un ejemplo de compositedisposable", new Rx02()));
