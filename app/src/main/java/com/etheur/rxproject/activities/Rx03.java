@@ -8,6 +8,8 @@ import com.etheur.rxproject.R;
 import com.etheur.rxproject.models.Empleado;
 import com.etheur.rxproject.models.ISum;
 import com.etheur.rxproject.utilities.Utilities;
+import com.google.android.material.textfield.TextInputEditText;
+import com.jakewharton.rxbinding4.widget.RxTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +20,20 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.disposables.DisposableContainer;
+import io.reactivex.rxjava3.functions.BiFunction;
 import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.observables.GroupedObservable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class Rx03 extends AppCompatActivity {
 
     private String[] numeros = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,7 +280,7 @@ public class Rx03 extends AppCompatActivity {
      */
     private void testLongTask(){
         Utilities.showConsoleMessage("=============== Operador Long Task ===============");
-        Observable.create((ObservableOnSubscribe<String>) emitter -> {
+        Disposable disposable = Observable.create((ObservableOnSubscribe<String>) emitter -> {
             try {
                 emitter.onNext(longOperation());
             } catch (InterruptedException e){
@@ -287,6 +294,7 @@ public class Rx03 extends AppCompatActivity {
                         e -> Utilities.showConsoleMessage("onErrorLongTask: " + e),
                         () -> Utilities.showConsoleMessage("onCompleteLongTask")
                 );
+        compositeDisposable.add(disposable);
     }
 
     ISum sum = (a, b) -> a + b;
@@ -329,7 +337,7 @@ public class Rx03 extends AppCompatActivity {
      * El operador Map transforma cada item emitido por un Observable aplicando una función a cada
      * item.
      */
-    private void testMapOperator(){
+    private void testMapOperator()  {
         Utilities.showConsoleMessage("=============== Operador Map Operator ===============");
         List<Empleado> empleados = Empleado.setNewEmpleados();
         // Una intefaz Function en esté caso recibe una lista de tipo Empleados
@@ -365,4 +373,116 @@ public class Rx03 extends AppCompatActivity {
                 });
     }
 
+    /**
+     *
+     */
+    private void testGroupBy(){
+        Observable<Integer> numsObservable = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        Observable<GroupedObservable<String, Integer>> groupedObservable = numsObservable.groupBy(integer -> {
+            if (integer %2 == 0) return "Par";
+            else return "Impar";
+        });
+        groupedObservable
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<GroupedObservable<String, Integer>>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {}
+
+                    @Override
+                    public void onNext(@NonNull GroupedObservable<String, Integer> stringIntegerGroupedObservable) {
+                        stringIntegerGroupedObservable
+                                .subscribe(new Observer<Integer>() {
+                                    @Override
+                                    public void onSubscribe(@NonNull Disposable d) {}
+
+                                    @Override
+                                    public void onNext(@NonNull Integer integer) {
+                                        if (stringIntegerGroupedObservable.getKey().equals("Par"))
+                                            Utilities.showConsoleMessage("onNext GroupBy: el número es par" + integer);
+                                        else
+                                            Utilities.showConsoleMessage("onNext GroupBy: el número es impar");
+                                    }
+
+                                    @Override
+                                    public void onError(@NonNull Throwable e) {}
+
+                                    @Override
+                                    public void onComplete() {}
+                                });
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {}
+
+                    @Override
+                    public void onComplete() {}
+                });
+
+    }
+
+    /**
+     * El operador Scan transforma un item en otro item aplicando una función a cada item emitido por un
+     * Observable y emite cada valor subsecuente.
+     */
+    private void testScan(){
+        Disposable disposableScan = Observable.just(1, 2, 3, 4, 5, 6, 7)
+                .scan((integer, integer2) -> integer + integer2)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .subscribe(next -> Utilities.showConsoleMessage("onNextScan: " + next));
+        compositeDisposable.add(disposableScan);
+    }
+
+    private void testWindow(){
+        Utilities.showConsoleMessage("=============== Operador Window ===============");
+        Observable<Observable<Integer>> observableObservable = Observable
+                .range(1, 150)
+                .window(3);
+        observableObservable
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .subscribe(
+                        observable -> {
+                            Utilities.showConsoleMessage("onNext siguiente ventana");
+                            observable.subscribe(n -> Utilities.showConsoleMessage("onNext item en ventana: " + n));
+                        }
+                );
+
+    }
+
+    /**
+     * Solo emite un item por Observable si un tiempo en particular ha pasado sin que se haya emitido
+     * otro item.
+     */
+    private void testDebounce(){
+        Utilities.showConsoleMessage("=============== Operador Debounce ===============");
+        TextInputEditText edtNumber = findViewById(R.id.edtNumber);
+        Observable<String> observable = (Observable<String>) RxTextView.textChanges(edtNumber)
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .map(e -> e.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        e -> Utilities.showConsoleMessage("onNext - String de Busqueda: " + e)
+                );
+    }
+
+    /**
+     * Suprime los items duplicados emitidos por un Observable
+     */
+    private void testDistinct(){
+        Utilities.showConsoleMessage("=============== Operador Distinct ===============");
+        Observable<Integer> numerosOservable = Observable.just(1, 2, 3, 4, 5, 2, 3, 4, 1, 3);
+        numerosOservable.distinct()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onNext -> Utilities.showConsoleMessage("onNext Distinct: " + onNext));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose();
+    }
 }
